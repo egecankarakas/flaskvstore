@@ -1,34 +1,79 @@
+import json
+import logging
+import re
+import sys
+
+import redis
 from flask import Flask, request
+from simplekv.memory.redisstore import RedisStore
 
+logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+store = RedisStore(redis.StrictRedis())
 app = Flask(__name__)
+logger = logging.getLogger('flaskvstore')
 
 
-@app.route('/keys', methods=['GET', 'DELETE'])
-def keys():
-    if request.method == 'GET':
-        filter_expression = request.args.get('filter')
-        # TODO: get all keys and values
-        raise NotImplementedError
-    elif request.method == 'DELETE':
-        # TODO: delete  all values
-        raise NotImplementedError
-
-
-@app.route('/keys/<string:key_id>', methods=['GET', 'DELETE', 'PUT'])
-def keys2(key_id):
-    if request.method == 'HEAD':
-        # TODO: check if a value exists
-        raise NotImplementedError
+@app.route('/keys', methods=['GET', 'DELETE', 'PUT'])
+def route_keys():
+    if request.method == 'PUT':
+        try:
+            ttl = request.args.get('expire_in')
+            if ttl:
+                ttl = int(ttl)
+        except Exception as e:
+            logger.error(e, exc_info=True)
+            return 'Bad TTL Parameter', 400
+        item = [(item[0], item[1]) for item in request.args.items() if item[0] != 'expire_in'][0]
+        store.put(item[0], bytes(item[1], 'utf-8'), ttl_secs=ttl)
+        logger.info(f'Item : {item} added/updated.')
+        return 'success', 200
     elif request.method == 'GET':
-        # TODO: get a value
-        raise NotImplementedError
-    elif request.method == 'PUT':
-        ttl = request.args.get('expire_in')
-        # TODO: add/update a value
-        raise NotImplementedError
+        message = 'KEY-VALUE Store Scanned'
+        filter_expression = request.args.get('filter')
+        keys = store.keys()
+        if filter_expression:
+            pattern = re.compile(filter_expression.replace('$', '.'))
+            message += f' with pattern {pattern}'
+            keys = [key for key in keys if pattern.match(key)]
+        result = [{key: store.get(key).decode('utf-8')} for key in keys]
+        logger.info(message)
+        return json.dumps(result)
     elif request.method == 'DELETE':
-        # TODO: delete a value
-        raise NotImplementedError
+        keys = store.keys()
+        for key in keys:
+            store.delete(key)
+        message = 'KEY-VALUE Store Cleared'
+        logger.info(message)
+        return message, 200
+
+
+@app.route('/keys/<string:key_id>', methods=['GET', 'DELETE'])
+def route_specific_key(key_id):
+    if request.method == 'HEAD':
+        if key_id not in store.keys():
+            message = f'Key : {key_id} not found'
+            logger.debug(message)
+            return 'false', 404
+        message = f'Key : {key_id} checked'
+        logger.debug(message)
+        return 'true', 200
+    elif request.method == 'GET':
+        try:
+            message = f'Key : {key_id} accessed'
+            logger.debug(message)
+            return json.dumps({key_id: store.get(key_id).decode('utf-8')}), 200
+        except Exception as e:
+            logger.error(e, exc_info=True)
+            return 'Key Error', 400
+    elif request.method == 'DELETE':
+        try:
+            store.delete(key_id)
+            message = f'Key : {key_id} deleted'
+            logger.info(message)
+            return message, 200
+        except Exception as e:
+            logger.error(e, exc_info=True)
+            return 'Key Error', 400
 
 
 if __name__ == '__main__':
