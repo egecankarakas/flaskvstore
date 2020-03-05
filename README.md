@@ -1,5 +1,5 @@
 # flaskvstore
-Flask KV store api implementation
+Flask Key-Value Store API implementation
 
 
 ## Table of contents
@@ -29,28 +29,58 @@ Project is created with:
 * Redis
 * Docker
 * Gunicorn
+
+Project is instrumented with:
+- Prometheus : https://prometheus.io/docs/prometheus/latest/getting_started/
+- Statsd Exporter: https://github.com/prometheus/statsd_exporter
+- Grafana: https://prometheus.io/docs/visualization/grafana/
 	
 ## Setup
-This is a step-by-step tutorial that details how to configure Flask to run on Docker with exports as Prometheus metrics.
-
-In a virtualenv, install Flask, Gunicorn:
+This is a step-by-step tutorial that details how to configure the project.
+In a virtualenv, install requirements:
 
 ```
  pip install -r requirements.txt
 ```
-- Prometheus: https://github.com/prometheus/statsd_exporter
-- Grafana: https://prometheus.io/docs/visualization/grafana/
 
-	
+In app.py set your redis host.
 
 
-# How to deploy with Docker
+```python
+
+ REDIS_HOST = 'YOUR_REDIS_HOST'
+ 
+```
+
+In Dockerfile set your STATSD_EXPORTER_HOST
+
+```
+CMD ["gunicorn", "-b", "0.0.0.0:5000", "app", "--statsd-host=STATSD_EXPORTER_HOST:9125", "--statsd-prefix=flaskvstore"]
+ 
+```
+
+
+
+### Deploy with Docker
 
 After installing Gunicorn and Flask, create a file app.py that return flask APP.
 
 ```
  docker build --tag flaskvstore
  docker run --detach -p 5000:5000 flaskvstore
+```
+
+Setup your statsd configuration  with following statsd.conf file:  
+
+```
+mappings:
+  - match: flaskvstore.gunicorn.request.status.*
+    help: "http response code"
+    name: "http_response_code"
+    labels:
+      status: "$1"
+      job: "helloworld_gunicorn_response_code"
+
 ```
 
 
