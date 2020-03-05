@@ -118,7 +118,6 @@ HTTP GET /keys?filter=wo$d
 ```
 
 ## Response Codes 
-### Response Codes
 
 - 200: Success
 - 400: Bad request
