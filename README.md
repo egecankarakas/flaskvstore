@@ -108,7 +108,7 @@ The action taken on the representation will be contextual to the media type bein
 
 ### How to set expiry time when putting value : 
 ```
-HTTP PUT /keys? my_name = _value &expire_in= __time __ (sec)
+HTTP PUT /keys? my_name = _value_ &expire_in= _time _ (sec)
 
 ```
 ### Suporting wildcard keys for all values : 
