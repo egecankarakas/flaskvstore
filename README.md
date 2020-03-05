@@ -95,19 +95,33 @@ scrape_configs:
 ```
 
 
-## Functionality Details
+## HTTP Verbs
 
-#### Get Value
-#### Get all Keys and Values
-#### Set a value
-#### Existence value check
-#### Delete a value
-#### Delete all values
-#### Expiry time to put values
-#### Wildcard keys for geting all values
-#### Logging
-#### HTTP Status
+HTTP verbs, or methods, should be used in compliance with their definitions under the [HTTP/1.1](http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html) standard.
+The action taken on the representation will be contextual to the media type being worked on and its current state. Here's an example of how HTTP verbs map to create, read, update, delete operations in a particular context:
+
+| HTTP METHOD | HEAD            | GET       | PUT         | DELETE |
+| ----------- | --------------- | --------- | ----------- | ------ |
+| /keys       |        X        | List all keys |If exists, update Key; If not, error| Delete all keys |
+| /keys/{id}  | Check key exists           | Return {key: value}  | X | Delete key |
 
 
+### How to set expiry time when putting value : 
+```
+HTTP PUT /keys? my_name = _value &expire_in= __time __ (sec)
 
+```
+### Suporting wildcard keys for all values : 
+```
+HTTP GET /keys?filter=wo$d
+
+```
+
+## Response Codes 
+### Response Codes
+
+200: Success
+400: Bad request
+404: Cannot be found
+500: Server Error
 
