@@ -33,10 +33,8 @@ Project is created with:
 ## Setup
 This is a step-by-step tutorial that details how to configure Flask to run on Docker with exports as Prometheus metrics.
 
-
+In a virtualenv, install Flask, Gunicorn and the Python Prometheus client:
 
 ```
-$ cd ../
-$ 
-$ 
+ pip install flask gunicorn prometheus-client
 ```
