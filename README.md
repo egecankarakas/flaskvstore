@@ -79,10 +79,34 @@ mappings:
     name: "http_response_code"
     labels:
       status: "$1"
-      job: "helloworld_gunicorn_response_code"
+      job: "flaskvstore_gunicorn_response_code"
 
 ```
 
+Add following job to scrape_configs in prometheus.yml file. 
+Set your STATSD_EXPORTER_HOST: 
+
+```
+scrape_configs:
+  - job_name: 'flaskvstore_gunicorn'
+    static_configs:
+      - targets: ['STATSD_EXPORTER_HOST:9102']
+
+```
+
+
+## Functionality Details
+
+#### Get Value
+#### Get all Keys and Values
+#### Set a value
+#### Existence value check
+#### Delete a value
+#### Delete all values
+#### Expiry time to put values
+#### Wildcard keys for geting all values
+#### Logging
+#### HTTP Status
 
 
 
