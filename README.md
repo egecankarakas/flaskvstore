@@ -6,8 +6,8 @@ Flask Key-Value Store API implementation
 * [General info](#general-info)
 * [Technologies](#technologies)
 * [Setup](#setup)
-* [HTTP Verbs]
-* [Response Code]
+* [HTTP Verbs](#http-verbs)
+* [Response Codes](#response-codes)
 
 ## General info
 This project is simple key-value application, complete with tests, local deployment and documentation.
