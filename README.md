@@ -5,7 +5,9 @@ Flask Key-Value Store API implementation
 ## Table of contents
 * [General info](#general-info)
 * [Technologies](#technologies)
-* [Setup](#setup)
+* [Setup](#setup)* 
+* [HTTP Verbs](#httpverbs)
+* [Response Code](#responsecode)
 
 ## General info
 This project is simple key-value application, complete with tests, local deployment and documentation.
@@ -63,14 +65,12 @@ CMD ["gunicorn", "-b", "0.0.0.0:5000", "app", "--statsd-host=STATSD_EXPORTER_HOS
 
 ### Deploy with Docker
 
-After installing Gunicorn and Flask, create a file app.py that return flask APP.
-
 ```
  docker build --tag flaskvstore
  docker run --detach -p 5000:5000 flaskvstore
 ```
 
-Setup your statsd configuration  with following statsd.conf file:  
+#### Setup your statsd configuration  with following statsd.conf file:  
 
 ```
 mappings:
@@ -83,8 +83,7 @@ mappings:
 
 ```
 
-Add following job to scrape_configs in prometheus.yml file. 
-Set your STATSD_EXPORTER_HOST: 
+#### Add following job to scrape_configs in prometheus.yml file. Then, set your STATSD_EXPORTER_HOST.
 
 ```
 scrape_configs:
