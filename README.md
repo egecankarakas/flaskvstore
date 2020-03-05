@@ -120,8 +120,8 @@ HTTP GET /keys?filter=wo$d
 ## Response Codes 
 ### Response Codes
 
-200: Success
-400: Bad request
-404: Cannot be found
-500: Server Error
+- 200: Success
+- 400: Bad request
+- 404: Cannot be found
+- 500: Server Error
 
